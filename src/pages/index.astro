@@ -1,11 +1,38 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { shuffle } from '@probablyduncan/common';
+import GreetingButton from "../components/GreetingButton.astro";
+import Layout from "../layouts/Layout.astro";
+import { shuffle, shuffleRef } from "@probablyduncan/common";
+import { getProducts } from "../lib/products";
+import { actions } from "astro:actions";
 
-const products = [ "p1", "p2", "p3" ];
+const products = await getProducts();
+shuffleRef(products);
+
+// this will evaluate if we've already called the action
+const result = Astro.getActionResult(actions.checkout.create);
+if (result && !result.error) {
+	return Astro.redirect(result.data.url)
+}
 ---
 
 <Layout>
+	<GreetingButton type="hello" />
 	<div class="p-4">Shop around!</div>
-	<div class="p-4">{shuffle(products).map(p => <span class="p-2">{p}</span>)}</div>
+	<div class="p-4">
+		{
+			products.map((p) => (
+				<div class="p-2">
+					<form
+						method="post"
+						action={actions.checkout.create}
+					>
+						<input type="hidden" name="id" value={p.id} />
+						<button class="bg-blue-600 text-white hover:bg-blue-800 py-1 px-2">
+							Buy {p.title} (${p.amount/100})
+						</button>
+					</form>
+				</div>
+			))
+		}
+	</div>
 </Layout>

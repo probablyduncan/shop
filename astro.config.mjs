@@ -5,7 +5,6 @@ import netlify from "@astrojs/netlify";
 import tailwind from "@astrojs/tailwind";
 
 export default defineConfig({
-    integrations: [clerk(), tailwind()],
 
     env: {
         schema: {
@@ -17,10 +16,23 @@ export default defineConfig({
                 context: "server",
                 access: "secret",
             }),
+            STRIPE_SECRET_KEY: envField.string({
+                context: "server",
+                access: "secret",
+            }),
+            STRIPE_SIGNING_SECRET: envField.string({
+                context: "server",
+                access: "secret",
+            }),
+            PRODIGI_API_KEY: envField.string({
+                context: "server",
+                access: "secret"
+            })
         }
     },
 
+    integrations: [clerk(), tailwind()],
     adapter: netlify(),
-    output: "static",
+    output: "server",
 
 });

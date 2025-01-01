@@ -1,0 +1,14 @@
+---
+import { actions } from "astro:actions";
+
+interface Props {
+    priceID: number;
+}
+
+const { priceID } = Astro.props;
+---
+
+<form method="post" action={actions.checkout.create}>
+    <input type="hidden" name="priceId" value={priceID} />
+    <button class="bg-blue-600 text-white hover:bg-blue-800 py-1 px-2">Buy</button>
+</form>

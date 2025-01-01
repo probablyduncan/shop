@@ -1,0 +1,5 @@
+todo
+- [ ] clerk
+- [ ] db
+- [ ] stripe
+- [ ] 

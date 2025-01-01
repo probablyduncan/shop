@@ -1,0 +1,37 @@
+---
+interface Props {
+    type?: "hello" | "goodbye";
+}
+
+const { type = "hello" } = Astro.props;
+---
+
+<button data-greeting={type} class="border-black border-2 rounded-md m-4 py-1 px-2 hover:border-gray-600 hover:text-gray-600">Get greeting</button>
+
+<script>
+    import { actions } from "astro:actions";
+    const actionMap = {
+        hello: actions.greetings.getGreeting,
+        goodbye: actions.greetings.getGoodbye,
+    };
+    document.querySelectorAll("button[data-greeting]").forEach((_e) => {
+        const button = _e as HTMLButtonElement;
+        const type = (button.dataset.greeting ?? "hello") as keyof typeof actionMap;
+
+        if (!type || !(type in actionMap)) {
+            return;
+        }
+
+        button.addEventListener("click", async () => {
+            const { data, error } = await actionMap[type]({
+                name: "Duncan",
+            });
+
+            if (!error) {
+                alert(data);
+            } else {
+                alert(error);
+            }
+        });
+    });
+</script>
