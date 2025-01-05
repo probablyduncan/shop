@@ -1,9 +1,7 @@
 import { ActionError, defineAction } from "astro:actions";
 import { z } from "astro:schema";
 import { getProducts } from "../lib/products";
-import { toSeveral } from "@probablyduncan/common";
 import { stripe } from "../lib/stripe";
-import astroConfig from "../../astro.config.mjs";
 
 export const checkout = {
     create: defineAction({

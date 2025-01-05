@@ -1,0 +1,120 @@
+---
+import { DateDiff } from '../lib/countdown';
+
+interface Props {
+    wrapperClasses?: string;
+    timerClasses?: string;
+    colonClasses?: [string, string, string];
+    labelClasses?: string;
+    label?: string;
+    startTime?: Date | number;
+    endTime: Date | number;
+}
+
+const { 
+    wrapperClasses = "", 
+    timerClasses = "",
+    labelClasses = "", 
+    colonClasses: [c1, c2, c3] = ["", "", ""], 
+    label,
+    startTime = Date.now() + (new Date().getTimezoneOffset() * 1000 * 60),
+    endTime,
+} = Astro.props;
+
+console.log(c1, c2, c3)
+
+const now = startTime instanceof Date ? startTime.getTime() : startTime;
+const end = endTime instanceof Date ? endTime.getTime() : endTime;
+const initialDiffStrings = new DateDiff(end - now).toStrings();
+
+---
+<div 
+    class:list={["font-semibold", wrapperClasses]}
+>
+    {label && <div 
+        class:list={["opacity-40", labelClasses]}
+    >
+        {label.toUpperCase()}
+    </div>}
+    <div 
+        data-countdown 
+        data-now={now} 
+        data-end={end} 
+        class:list={["text-6xl tabular-nums select-none", timerClasses]}
+    >
+        <!-- these aren't formatted bceause they can't have whitespace -->
+        <span data-days>{initialDiffStrings.days}</span><span class={c1}>:</span><span data-hours>{initialDiffStrings.hours}</span><span class={c2}>:</span><span data-minutes>{initialDiffStrings.minutes}</span><span class={c3}>:</span><span data-seconds>{initialDiffStrings.seconds}</span>
+    </div>
+</div>
+<script>
+    import { DateDiff, date_parts } from "../lib/countdown";
+    import JSConfetti from 'js-confetti'
+
+    function initCountdown() {
+
+        [...document.querySelectorAll("[data-countdown]")].forEach(_e => {
+            const e = _e as HTMLElement;
+            let now = parseInt(e.dataset.now!);
+            const end = parseInt(e.dataset.end!);
+
+            const spans = {
+                days: e.querySelector("[data-days]") as HTMLElement,
+                hours: e.querySelector("[data-hours]") as HTMLElement,
+                minutes: e.querySelector("[data-minutes]") as HTMLElement,
+                seconds: e.querySelector("[data-seconds]") as HTMLElement,
+            }
+
+            function oneMoreSecondGoneLikeDustInTheAutumnBreeze() {
+                
+                now += 1000;
+                const diff = new DateDiff(end - now);
+
+                date_parts.forEach(k => {
+                    spans[k].innerHTML = diff.toString(k);
+                });
+
+                if (diff.isZeroOrNegative()) {
+                    clearInterval(intervalId);
+                    new JSConfetti().addConfetti();
+                }
+            }
+
+            const intervalId = setInterval(oneMoreSecondGoneLikeDustInTheAutumnBreeze, 1000);
+        });
+
+    }
+
+    // old code, this relies on system time while other one just uses setInterval
+    // function initCountdown() {
+
+    //     const countdowns = [...document.querySelectorAll("[data-countdown]")].map(c => ({
+    //         days: c.querySelector("[data-days]") as HTMLElement,
+    //         hours: c.querySelector("[data-hours]") as HTMLElement,
+    //         minutes: c.querySelector("[data-minutes]") as HTMLElement,
+    //         seconds: c.querySelector("[data-seconds]") as HTMLElement,
+    //     }));
+        
+    //     function countDown() {
+
+    //         const diff = getDiffFromMs(
+    //             getFirstOfNextMonth().getTime(), 
+    //             new Date().getTime() + (new Date().getTimezoneOffset() * 1000 * 60)
+    //         );
+            
+    //         if (diff.days < 0) {
+    //             clearInterval(intervalId);
+    //         }
+
+    //         countdowns.forEach(c => {
+    //             (["days", "hours", "minutes", "seconds"] as const).forEach(k => {
+    //                 c[k].innerHTML = diff[k].toString().padStart(2, "0");
+    //             });
+    //         });
+    //     }
+
+    //     const intervalId = setInterval(countDown, 10);
+    // }
+
+    document.addEventListener("DOMContentLoaded", initCountdown);
+    document.addEventListener("astro:after-swap", initCountdown);
+</script>

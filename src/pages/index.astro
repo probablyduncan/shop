@@ -1,38 +1,80 @@
 ---
-import GreetingButton from "../components/GreetingButton.astro";
+import CountDown from "../components/CountDown.astro";
+import Prose from "../components/Prose.astro";
 import Layout from "../layouts/Layout.astro";
-import { shuffle, shuffleRef } from "@probablyduncan/common";
-import { getProducts } from "../lib/products";
-import { actions } from "astro:actions";
+import { getFirstOfNextMonth } from "../lib/countdown";
 
-const products = await getProducts();
-shuffleRef(products);
+const colorClasses = ["bg-c", "bg-m", "bg-y", "bg-k"];
 
-// this will evaluate if we've already called the action
-const result = Astro.getActionResult(actions.checkout.create);
-if (result && !result.error) {
-	return Astro.redirect(result.data.url)
-}
+const names = [
+	"Point Nope Art Club",
+	"Big Early Art Club",
+	"Little Whimsey Art Club",
+	"Gumboot Art Club",
+	"Zegleget Art Club",
+	"shop (dot) duncanpetrie (dot) com",
+];
+
 ---
 
 <Layout>
-	<GreetingButton type="hello" />
-	<div class="p-4">Shop around!</div>
-	<div class="p-4">
+	<nav class="w-full flex flex-col items-center">
+		<span
+			class:list={[
+				"font-serif text-4xl",
+				"px-8 pt-5 pb-2",
+				"border-b-2 border-black dark:border-white",
+			]}
+		>
+			<a
+				href="/"
+				class:list={[
+					"inline-block select-none ligatures",
+					"transition-transform hover:-translate-y-[3px]",
+				]}
+			>
+				{names[Math.floor(Math.random() * names.length)]}
+			</a>
+		</span>
+	</nav>
+	<section class="flex overflow-x-scroll mt-6 pb-4 px-4">
 		{
-			products.map((p) => (
-				<div class="p-2">
-					<form
-						method="post"
-						action={actions.checkout.create}
-					>
-						<input type="hidden" name="id" value={p.id} />
-						<button class="bg-blue-600 text-white hover:bg-blue-800 py-1 px-2">
-							Buy {p.title} (${p.amount/100})
-						</button>
-					</form>
-				</div>
+			[0, 1, 2, 3].map((i) => (
+				<div
+					class:list={[
+						"aspect-[4/3] min-w-[500px] w-[calc(100vw*2/5)] max-w-[800px] mx-5",
+						colorClasses[i],
+					]}
+				/>
 			))
 		}
-	</div>
+	</section>
+	<section class="w-full flex justify-center mt-16 mb-96">
+		<div class="flex gap-16 md:flex-row flex-col-reverse md:justify-around md:w-full md:items-center">
+			<div class="font-medium [&_>_*]:mb-2 max-w-xs">
+				<h1 class="text-4xl font-semibold pb-4">How does it work?</h1>
+				<p>
+					On the <i>first of every month,</i> a new set of photos becomes
+					available.
+				</p>
+				<p>
+					You can order the ones you like, or
+					<i>subscribe at a discount </i> to get all images delivered to
+					you monthly.
+				</p>
+				<p>
+					All proceeds are donated to a rotating list of
+					<i>climate change reduction charities.</i>
+				</p>
+				<p>Make your walls look good, and feel good doing it.</p>
+			</div>
+            <CountDown 
+                wrapperClasses="text-right" 
+                label="NEXT PHOTOSET RELEASE" 
+                colonClasses={["text-c", "text-m", "text-y"]}
+                endTime={Date.now() + (new Date().getTimezoneOffset() * 1000 * 60) + 5000}
+                endTime={getFirstOfNextMonth()}
+            />
+		</div>
+	</section>
 </Layout>
