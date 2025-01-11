@@ -1,5 +1,5 @@
 ---
-import { DateDiff } from '../lib/countdown';
+import DateDiff from '@probablyduncan/common/datediff';
 
 export const prerender = false;
 
@@ -49,7 +49,7 @@ const initialDiffStrings = new DateDiff(end - now).toStrings();
     </div>
 </div>
 <script>
-    import { DateDiff, date_parts } from "../lib/countdown";
+    import DateDiff, { date_parts } from "@probablyduncan/common/datediff";
     import JSConfetti from 'js-confetti'
 
     function initCountdown() {
@@ -83,39 +83,7 @@ const initialDiffStrings = new DateDiff(end - now).toStrings();
 
             const intervalId = setInterval(oneMoreSecondGoneLikeDustInTheAutumnBreeze, 1000);
         });
-
     }
-
-    // old code, this relies on system time while other one just uses setInterval
-    // function initCountdown() {
-
-    //     const countdowns = [...document.querySelectorAll("[data-countdown]")].map(c => ({
-    //         days: c.querySelector("[data-days]") as HTMLElement,
-    //         hours: c.querySelector("[data-hours]") as HTMLElement,
-    //         minutes: c.querySelector("[data-minutes]") as HTMLElement,
-    //         seconds: c.querySelector("[data-seconds]") as HTMLElement,
-    //     }));
-        
-    //     function countDown() {
-
-    //         const diff = getDiffFromMs(
-    //             getFirstOfNextMonth().getTime(), 
-    //             new Date().getTime() + (new Date().getTimezoneOffset() * 1000 * 60)
-    //         );
-            
-    //         if (diff.days < 0) {
-    //             clearInterval(intervalId);
-    //         }
-
-    //         countdowns.forEach(c => {
-    //             (["days", "hours", "minutes", "seconds"] as const).forEach(k => {
-    //                 c[k].innerHTML = diff[k].toString().padStart(2, "0");
-    //             });
-    //         });
-    //     }
-
-    //     const intervalId = setInterval(countDown, 10);
-    // }
 
     document.addEventListener("DOMContentLoaded", initCountdown);
     document.addEventListener("astro:after-swap", initCountdown);

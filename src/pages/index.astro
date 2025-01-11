@@ -2,7 +2,7 @@
 import CountDown from "../components/CountDown.astro";
 import Prose from "../components/Prose.astro";
 import Layout from "../layouts/Layout.astro";
-import { getFirstOfNextMonth } from "../lib/countdown";
+import { getFirstOfNextMonth } from "../lib/dateHelper";
 
 const colorClasses = ["bg-c", "bg-m", "bg-y", "bg-k"];
 
@@ -72,7 +72,6 @@ const names = [
                 wrapperClasses="text-right" 
                 label="NEXT PHOTOSET RELEASE" 
                 colonClasses={["text-c", "text-m", "text-y"]}
-                endTime={Date.now() + (new Date().getTimezoneOffset() * 1000 * 60) + 5000}
                 endTime={getFirstOfNextMonth()}
             />
 		</div>
